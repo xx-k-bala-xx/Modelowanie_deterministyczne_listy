@@ -1,0 +1,661 @@
+---
+title: "Lista 3"
+author: "Klaudia Bała"
+format: pdf
+jupyter: python3
+editor: visual
+---
+
+# Zadanie 1
+
+Mamy zadane jednorodne równanie ciepła na odcinku $x \in [-1,1]$ z jednorodnym warunkiem brzegowym Neumanna w $x=-1$ oraz $x=1$. Zakładamy, że współczynnik dyfuzji $D=1$ oraz warunek początkowy $u_0(x)=cos(\pi x)$. Zatem możemy to zapisać jako układ
+
+\begin{equation}
+\begin{cases}
+u_t=u_{xx} \\
+u_x(-1)=0 \\
+u_x(1)=0 \\
+u_0=cos(\pi x)
+
+\end{cases}
+\end{equation}
+
+Do rozwiązania tego układu posłużymy się metodą szeregów Fouriera, stąd będziemy zakładali następującą postać rozwiązania
+$$u(x,t)=X(x)T(t),$$
+gdzie $X(x)$ i $T(t)$ są pewnymi nieznanymi funkcjami jednej zmiennej.
+
+Stąd mamy
+$$u_t=u_{xx} \Rightarrow X(x)T'(t)=X''(x)T(t).$$
+Następnie otrzymujemy
+$$\frac{X''(x)}{X(x)}=\frac{T'(t)}{T(t)}=\lambda,$$
+gdzie $\lambda$ to pewna stała.
+
+Na początek zajmijmy się równaniem $X''(x)=\lambda X(x).$
+
+## $\lambda > 0$
+
+Rozwiązanie ma wtedy postać $X(x)=C_1 e^{\sqrt{\lambda}x} + C_2 e^{-\sqrt{\lambda}x}.$
+
+Wykorzystajmy nasz warunek brzegowy (który sprowadził się do postaci $X'(-1)=X'(1)=0$) do wyznaczenia wartości parametrów.
+
+$X'(x)=\sqrt{\lambda}(C_1 e^{\sqrt{\lambda}x} - C_2 e^{-\sqrt{\lambda}x})$
+
+Z $X'(-1)=0$ mamy $0=C_1 e^{-\sqrt{\lambda}} - C_2 e^{\sqrt{\lambda}} \Rightarrow C_2=C_1 e^{-2\sqrt{\lambda}}.$
+
+Z $X'(1)=0$ mamy $0=C_1 e^{\sqrt{\lambda}} - C_2 e^{-\sqrt{\lambda}} \Rightarrow C_2=C_1 e^{2\sqrt{\lambda}}.$
+
+Stąd $C_1 e^{-2\sqrt{\lambda}}=C_1 e^{2\sqrt{\lambda}} \Rightarrow C_1=0, C_2=0$, czyli $X(x)=0$, ale jest to mało interesujący przypadek, bo wtedy $u(x,t)=0$ i to rozwiązanie nie spełnia warunku początkowego $u_0(x)=cos(\pi x)$ dla $x \in [-1,1]$.
+
+## $\lambda = 0$
+
+W takim przypadku rozwiązanie przyjmuje postać $X(x)=A+Bx$.
+
+$X'(x)=B,$ stąd uwzględniając warunki brzegowe mamy $B=0$ i rozwiązanie jest postaci $X(x)=A$. Niestety to rozwiązanie nie spełnia warunku początkowego, gdyż $u(x,0)=A \cdot T(0)$ a nasz warunek początkowy miał postać $u_0(x)=cos(\pi x)$  dla $x \in [-1,1]$. Zatem to rozwiązanie odrzucamy.
+
+## $\lambda < 0$
+
+Dla takich $\lambda$ rozwiązanie przyjmuje postać $X(x)=C_3 cos(\sqrt{|\lambda|}x) + C_4 sin(\sqrt{|\lambda|}x).$
+
+$X'(x)=\sqrt{|\lambda|}(-C_3 sin(\sqrt{|\lambda|}x) + C_4 cos(\sqrt{|\lambda|}x))$
+
+Z $X'(-1)=0$ mamy $0=\sqrt{|\lambda|}(-C_3 sin(-\sqrt{|\lambda|}) + C_4 cos(-\sqrt{|\lambda|})) \Rightarrow$ 
+
+$C_3 sin(-\sqrt{|\lambda|})=C_4 cos(-\sqrt{|\lambda|}).$
+
+Dodatkowo wiedząc, że $sin(-\sqrt{|\lambda|})=-sin(\sqrt{|\lambda|})$ i $cos(-\sqrt{|\lambda|})=cos(\sqrt{|\lambda|})$ dostajemy $-C_3 sin(\sqrt{|\lambda|})  =C_4 cos(\sqrt{|\lambda|}).$
+
+Z $X'(1)=0$ mamy $0=\sqrt{|\lambda|}(-C_3 sin(\sqrt{|\lambda|}) + C_4 cos(\sqrt{|\lambda|})) \Rightarrow C_3 sin(\sqrt{|\lambda|})=C_4 cos(\sqrt{|\lambda|}).$
+
+Zatem dostajemy $C_3 sin(\sqrt{|\lambda|}) = -C_3 sin(\sqrt{|\lambda|}) \Rightarrow 0=2C_3 sin(\sqrt{|\lambda|}),$ stąd $C_3=0$ lub $sin(\sqrt{|\lambda|})=0 \Rightarrow \sqrt{|\lambda|}=k \pi$ dla $k$ całkowitych i $k \geqslant 1.$
+
+### I) $C_3=0$
+
+Wtedy mamy $0=C_4 cos(\sqrt{|\lambda|})$. Zatem dostajemy $C_4=0$, co prowadzi nas do $X(x)=0$, czyli przypadku który już wcześniej odrzuciliśmy, lub $cos(\sqrt{|\lambda|})=0 \Rightarrow \sqrt{|\lambda|} = \frac{\pi}{2} + k \pi$ dla $k$ całkowitych i $k \geqslant 1.$. Wtedy rozwiązanie przyjmuje postać $X_k(x)=C_4 sin((\frac{\pi}{2} + k \pi)x)$ dla $\lambda_k=-(\frac{\pi^2}{4}+k^2 \pi^2 +k \pi^2)$
+
+### II) $\sqrt{|\lambda|}=k \pi$
+
+Tutaj również dostajemy dwa przypadki jak poprzednio z tym, że przypadek $C_4=0$ nie odrzucamy i wtedy rozwiązanie ma postać $X_k(x)=C_3 cos(k \pi x)$ dla $\lambda_k=-(k\pi)^2$, zaś przypadek $cos(\sqrt{|\lambda|})=0$ odrzucamy gdyż funkcja $sin$ nie zeruje się dla tych samych argumentów co funkcja $cos$.
+
+
+Teraz przejdziemy do zajęcia się równaniem $T'(t)=\lambda T(t).$
+
+Rozwiązanie takiego zagadnienia ma postać $T(t)=C_5 e^{\lambda t}$
+
+Używając wcześniej wyznaczonych $\lambda_k$ dochodzimy do dwóch rozwiązań
+
+$u_k(x,t)=a_k e^{-(k \pi)^2 t} cos(k\pi x)$ dla $\lambda_k=-(k\pi)^2$ oraz $u_k(x,t)=b_k e^{-(\frac{\pi^2}{4}+k^2 \pi^2 +k \pi^2) t} sin((\frac{\pi}{2} + k \pi)x)$ dla $\lambda_k=-(\frac{\pi^2}{4}+k^2 \pi^2 +k \pi^2)$
+
+Ogólne rozwiązanie będzie kombinacją liniową $u_k(x,t)$. 
+
+### dla $\lambda_k=-(\frac{\pi^2}{4}+k^2 \pi^2 +k \pi^2)$
+
+$u(x,t) = \sum_{k=1}^{\infty} b_k e^{-(\frac{\pi^2}{4}+k^2 \pi^2 +k \pi^2) t} sin((\frac{\pi}{2} + k \pi)x)$
+
+Teraz wyznaczmy współczynniki z warunku początkowego $u(x,t)=cos(\pi x)$
+
+$u(x,0)=\sum_{k=1}^{\infty} b_k sin((\frac{\pi}{2} + k \pi)x)$
+
+Niestety zauważamy, że w naszej sumie nie ma w ogóle cosinusów, więc i składnika $cos(\pi x)$, stąd odrzucamy to rozwiązanie.
+
+### dla $\lambda_k=-(k\pi)^2$
+
+Rozwiązanie ma postać:
+
+$u(x,t) = \sum_{k=1}^{\infty} a_k e^{-(k \pi)^2 t} cos(k\pi x)$
+
+Teraz wyznaczmy współczynniki z warunku początkowego $u(x,t)=cos(\pi x)$
+
+$u(x,0) = \sum_{k=1}^{\infty} a_k cos(k\pi x)$, stąd $a_k=1$ dla $k=1$ pozostałe współczynniki się zerują.
+
+Zatem ostatecznie nasze rozwiązanie przyjmuje postać $u(x,t) = e^{-(\pi)^2 t} cos(\pi x).$
+
+# Zadanie 2
+
+Mamy obszar $L$ zadany jako sumę mnogościową dwóch podobszarów $L=L_1 \cup L_2$ gdzie:
+$$L_1= \left\{ (x,y) \in [-1,1]^2 : -1 \leqslant x \leqslant 0, \,\, -1 \leqslant y \leqslant 1  \right\},$$
+$$L_2= \left\{ (x,y) \in [-1,1]^2 : 0 \leqslant x \leqslant 1, \,\, -1 \leqslant y \leqslant \frac{1}{2}  \right\}.$$
+
+
+
+Na tak zdefiniowanym obszarze rozpatrujemy niejednorodne równanie ciepła z mieszanymi warunkami brzegowymi:
+
+\begin{equation}
+\begin{cases}
+u_t(x, y, t) = \Delta u(x, y, t) + \varepsilon \mathbf{1}_{\{(x, y) \in [-\frac{1}{10}, \frac{1}{10}]^2\}}(x, y), & (x, y) \in L, \ 0 < t \leq 10, \\[1em]
+u(-1, y, t) = 0, & y \in [-1, 1], \ 0 < t \leq 10, \\[1em]
+u(x, -1, t) = 0, & x \in [-1, 1], \ 0 < t \leq 10, \\[1em]
+u_x(1, y, t) = 0, & y \in [-1, \frac{1}{2}], \ 0 < t \leq 10, \\[1em]
+u_x(0, y, t) = 0, & y \in [\frac{1}{2}, 1], \ 0 < t \leq 10, \\[1em]
+u_x(x, 1, t) = 0, & x \in [-1, 0], \ 0 < t \leq 10, \\[1em]
+u(x, \frac{1}{2}, t) = 0, & x \in [0, 1], \ 0 < t \leq 10, \\[1em]
+u(x, y, 0) = \exp\left(-\big((x + 1)^2 + (y + 1)^2\big)\right), & (x, y) \in L.
+\end{cases}
+\end{equation}
+
+## 1.1
+
+Nasz układ rozwiążemy oddzielnie na obszarze $L_1$ i oddzielnie na obszrze $L_2$. Używając znanego nam schematu numerycznego postaci:
+
+\begin{align}
+u(x,y,t+h_t) &= u(x,y,t) + \frac{h_t}{h^2} \big( u(x+h,y,t) + u(x-h,y,t) + u(x,y-h,t) \notag \\
+&\quad + u(x,y+h,t) - 4u(x,y,t) \big) + h_t \cdot f(x,y),
+\end{align}
+
+
+gdzie $f(x,y) = \varepsilon \mathbf{1}_{\{(x, y) \in [-\frac{1}{10}, \frac{1}{10}]^2\}}(x, y)$ oraz zakładamy, że $h_x=h_y=h$. Dodatkowo na brzegach uwzględnimy odpowiednio warunek Dirichleta lub Neumanna zgodnie z układem równań. W miejscu cięcia dwóch obszarów brzegi będziemy uzupełniać jako średnia arytmetyczna dwóch sąsiadów (t i y jest stałe zmieniamy tylko x). Zauważmy dodatkowo, że jeśli $x=0$ uwzględnimy w obszarze $L_1$ jak i $L_2$ to w obu obszarach pozostanie nam "pasek" nieuzupełnionych danych, ale tak naprawdę to ten sam pasek (przynajmniej tam gdzie oba obszary istnieją), ponieważ w obu obszarach są to miejsca dla $x=0$. Zatem chcąc wyznaczyć punkt w tym "pasku" bierzemy jego sąsiada znajdującego się po lewej stronie w obszarze $L_1$ oraz prawego sąsiada z obszaru $L_2$, co możemy zapisać dla ustalonego $t$ i $y$ mamy $$u(0,y,t)=\frac{u(h,y,t)+u(-h,y,t)}{2}.$$
+
+## 1.2
+
+Dla $\varepsilon \in \{ 0,0.01,0.1 \}$, $h_x=h_y=h=0.1$ oraz $h_t=0.001$ rozwiązemy nasz układ podanym wcześniej schematem numerycznym. Rozwiązanie pokażemy jako mapę ciepła dla kilku wybranych czasów. 
+
+
+```{python}
+#|echo: false
+#|warning: false
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# funkcja dla czasu zero, warunek początkowy
+def f_0(x, y):
+    return np.exp(-(x+1)**2-(y+1)**2)
+
+
+# parametry
+T = 10
+t_0 = 0
+h_x = 0.1
+h_t = 0.001
+n = int(T/h_t)
+
+# def x i y dla obszaru l1 i l2
+xs1 = [i/10 for i in range(-10, 1, 1)]
+ys1 = [i/10 for i in range(-10, 11, 1)]
+
+xs2 = [i/10 for i in range(0, 11, 1)]
+ys2 = [i/10 for i in range(-10, 6, 1)]
+
+# wymiary macierz
+l1_x, l1_y = len(xs1), len(ys1)
+l2_x, l2_y = len(xs2), len(ys2)
+
+# def macierzy poczatkowych
+##############################
+# uwaga trzeba dać x jako wsp 2 a y jako pierwszą, by macierz miała sens względem osi
+# bo wtedy x jest w poziomie a y w pionie jak powinno być
+##################################
+u1_0 = np.zeros(shape=(l1_y, l1_x), dtype=None)
+u2_0 = np.zeros(shape=(l2_y, l2_x), dtype=None)
+
+for i in range(l1_x):
+    u1_0[:,i] = [f_0(xs1[i], ys1[j]) for j in range(l1_y)]
+
+for i in range(l2_x):
+    u2_0[:,i] = [f_0(xs2[i], ys2[j]) for j in range(l2_y)]
+
+
+# sklejanie podobszarów do jednego obszaru za pomocą macierzy
+u_0 = np.zeros(shape=(l1_y, l1_x+l2_x-1), dtype=None)
+l_zer = [None]*(l1_y-l2_y)
+for i in range(l1_x+l2_x-1):
+    if i < l1_x:
+        u_0[:,i] = u1_0[:,i]
+    else:
+        u_0[:,i] = list(u2_0[:,i-l1_x+1]) + l_zer
+        
+U = np.zeros((l1_y, l1_x+l2_x-1, n+1), None) # tworzenie całościowej macierzy rozwiązania dla wszystkich czasów
+U[:, :, 0] = u_0 # dodanie warunku początkowego
+
+
+def f_epsilon(epsilon, x, y):
+    if -1/10 <= x <= 1/10 and -1/10 <= y <= 1/10:
+        return epsilon
+    return 0
+  
+
+
+# epsilon = 0
+
+
+# rozwiązanie L1
+U_L1 = np.zeros((l1_y, l1_x, n+1), None)
+U_L1[:, :, 0] = u1_0
+
+# rozwiązanie L2
+U_L2 = np.zeros((l2_y, l2_x, n+1), None)
+U_L2[:, :, 0] = u2_0
+
+for k in range(n):
+    # L1
+    for i in range(l1_x):
+        for j in range(l1_y):
+            #print((i,j,k))
+            if i + 1 > l1_x - 1 or j + 1 > l1_y - 1 or i - 1 < 0 or j - 1 < 0:
+                U_L1[j, i, k + 1] = 0 # Dirichlet wszedzie, pozniej poprawiamy na Neumana
+            else:
+                U_L1[j, i, k+1] = (U_L1[j, i, k] + h_t / (h_x ** 2) * (
+                            U_L1[j, i + 1, k] + U_L1[j, i - 1, k] +
+                            U_L1[j + 1, i, k] + U_L1[j - 1, i, k] - 4 * U_L1[j, i, k]) +
+                h_t*f_epsilon(0, xs1[i], ys1[j]))
+    U_L1[-1, :, k + 1] = U_L1[-2, :, k + 1] # góra
+    U_L1[:, -1, k + 1] = U_L1[:, -2, k + 1] # prawo
+
+    # L2
+    for i2 in range(l2_x):
+        for j2 in range(l2_y):
+            if i2 + 1 > l2_x - 1 or j2 + 1 > l2_y - 1 or i2 - 1 < 0 or j2 - 1 < 0:
+                U_L2[j2, i2, k + 1] = 0 # Dirichlet wszedzie, pozniej poprawiamy na Neumana
+            else:
+                U_L2[j2, i2, k+1] = (U_L2[j2, i2, k] + h_t / (h_x ** 2) * (
+                            U_L2[j2, i2 + 1, k] + U_L2[j2, i2 - 1, k] +
+                            U_L2[j2 + 1, i2, k] + U_L2[j2 - 1, i2, k] - 4 * U_L2[j2, i2, k]) +
+                h_t*f_epsilon(0, xs2[i2], ys2[j2]))
+
+    U_L2[:, -1, k + 1] = U_L2[:, -2, k + 1] # prawo
+    U_L2[:, 0, k + 1] = U_L2[:, 1, k + 1] # to jest po to by latwo robic srednia czyli lewo
+
+    # srednia elementow
+    for j22 in range(l2_y):
+        a = U_L1[j22, -2, k+1]
+        b = U_L2[j22, 1, k+1]
+        c = (a+b)/2
+        U_L1[j22, -1, k+1], U_L2[j22, 0, k+1] = c, c
+
+
+# dodawanie dwóch obszarów rozwiązanych do jednej macierzy
+for k in range(1,n+1):
+    u_k = np.zeros(shape=(l1_y, l1_x+l2_x-1), dtype=None)
+    l_zer = [None]*(l1_y-l2_y)
+    for i in range(l1_x+l2_x-1):
+        if i < l1_x:
+            u_k[:, i] = U_L1[:,i, k]
+        else:
+            u_k[:, i] = list(U_L2[:, i-l1_x+1, k]) + l_zer
+
+    U[:, :, k] = u_k
+    
+# Tworzenie układu podwykresów
+fig, axs = plt.subplots(2, 2, figsize=(14, 7), sharey=True)
+fig.suptitle("Mapa ciepła dla $\epsilon =0$")
+
+xs_11 = xs1.copy()
+xs_11.pop()
+
+# Tworzenie siatki współrzędnych
+X, Y = np.meshgrid(xs_11 + xs2, ys1)
+
+# Pierwszy wykres
+im1 = axs[0, 0].pcolormesh(X, Y, U[:, :, 0], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[0, 0].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[0, 0].set_ylim([min(ys1), max(ys1)])
+axs[0, 0].set_title("t=0")
+axs[0, 0].set_ylabel("y")
+axs[0, 0].set_xlabel("x")
+fig.colorbar(im1, ax=axs[0, 0])
+
+# Drugi wykres
+im2 = axs[0, 1].pcolormesh(X, Y, U[:, :, 4000], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[0, 1].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[0, 1].set_ylim([min(ys1), max(ys1)])
+axs[0, 1].set_title("t=4")
+axs[0, 1].set_ylabel("y")
+axs[0, 1].set_xlabel("x")
+fig.colorbar(im2, ax=axs[0, 1])
+
+# Trzeci wykres
+im3 = axs[1, 0].pcolormesh(X, Y, U[:, :, 8000], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[1, 0].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[1, 0].set_ylim([min(ys1), max(ys1)])
+axs[1, 0].set_title("t=8")
+axs[1, 0].set_ylabel("y")
+axs[1, 0].set_xlabel("x")
+fig.colorbar(im3, ax=axs[1, 0])
+
+# Czwarty wykres
+im4 = axs[1, 1].pcolormesh(X, Y, U[:, :, n], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[1, 1].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[1, 1].set_ylim([min(ys1), max(ys1)])
+axs[1, 1].set_title(f"t=10")
+axs[1, 1].set_ylabel("y")
+axs[1, 1].set_xlabel("x")
+fig.colorbar(im4, ax=axs[1, 1])
+
+
+plt.subplots_adjust(hspace=0.4, wspace=0.3)  # hspace: odstęp w pionie, wspace: odstęp w poziomie
+
+plt.show()
+```
+
+
+```{python}
+#|echo: false
+#|warning: false
+
+# epsilon = 0.01
+
+U = np.zeros((l1_y, l1_x+l2_x-1, n+1), None) # tworzenie całościowej macierzy rozwiązania dla wszystkich czasów
+U[:, :, 0] = u_0 # dodanie warunku początkowego
+
+# rozwiązanie L1
+U_L1 = np.zeros((l1_y, l1_x, n+1), None)
+U_L1[:, :, 0] = u1_0
+
+# rozwiązanie L2
+U_L2 = np.zeros((l2_y, l2_x, n+1), None)
+U_L2[:, :, 0] = u2_0
+
+for k in range(n):
+    # L1
+    for i in range(l1_x):
+        for j in range(l1_y):
+            #print((i,j,k))
+            if i + 1 > l1_x - 1 or j + 1 > l1_y - 1 or i - 1 < 0 or j - 1 < 0:
+                U_L1[j, i, k + 1] = 0 # Dirichlet wszedzie, pozniej poprawiamy na Neumana
+            else:
+                U_L1[j, i, k+1] = (U_L1[j, i, k] + h_t / (h_x ** 2) * (
+                            U_L1[j, i + 1, k] + U_L1[j, i - 1, k] +
+                            U_L1[j + 1, i, k] + U_L1[j - 1, i, k] - 4 * U_L1[j, i, k]) +
+                h_t*f_epsilon(0.01, xs1[i], ys1[j]))
+    U_L1[-1, :, k + 1] = U_L1[-2, :, k + 1] # góra
+    U_L1[:, -1, k + 1] = U_L1[:, -2, k + 1] # prawo
+
+    # L2
+    for i2 in range(l2_x):
+        for j2 in range(l2_y):
+            if i2 + 1 > l2_x - 1 or j2 + 1 > l2_y - 1 or i2 - 1 < 0 or j2 - 1 < 0:
+                U_L2[j2, i2, k + 1] = 0 # Dirichlet wszedzie, pozniej poprawiamy na Neumana
+            else:
+                U_L2[j2, i2, k+1] = (U_L2[j2, i2, k] + h_t / (h_x ** 2) * (
+                            U_L2[j2, i2 + 1, k] + U_L2[j2, i2 - 1, k] +
+                            U_L2[j2 + 1, i2, k] + U_L2[j2 - 1, i2, k] - 4 * U_L2[j2, i2, k]) +
+                h_t*f_epsilon(0.01, xs2[i2], ys2[j2]))
+
+    U_L2[:, -1, k + 1] = U_L2[:, -2, k + 1] # prawo
+    U_L2[:, 0, k + 1] = U_L2[:, 1, k + 1] # to jest po to by latwo robic srednia czyli lewo
+
+    # srednia elementow
+    for j22 in range(l2_y):
+        a = U_L1[j22, -2, k+1]
+        b = U_L2[j22, 1, k+1]
+        c = (a+b)/2
+        U_L1[j22, -1, k+1], U_L2[j22, 0, k+1] = c, c
+
+
+# dodawanie dwóch obszarów rozwiązanych do jednej macierzy
+for k in range(1,n+1):
+    u_k = np.zeros(shape=(l1_y, l1_x+l2_x-1), dtype=None)
+    l_zer = [None]*(l1_y-l2_y)
+    for i in range(l1_x+l2_x-1):
+        if i < l1_x:
+            u_k[:, i] = U_L1[:,i, k]
+        else:
+            u_k[:, i] = list(U_L2[:, i-l1_x+1, k]) + l_zer
+
+    U[:, :, k] = u_k
+    
+# Tworzenie układu podwykresów
+fig, axs = plt.subplots(2, 2, figsize=(14, 7), sharey=True)
+fig.suptitle("Mapa ciepła dla $\epsilon =0.01$")
+
+xs_11 = xs1.copy()
+xs_11.pop()
+
+# Tworzenie siatki współrzędnych
+X, Y = np.meshgrid(xs_11 + xs2, ys1)
+
+# Pierwszy wykres
+im1 = axs[0, 0].pcolormesh(X, Y, U[:, :, 0], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[0, 0].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[0, 0].set_ylim([min(ys1), max(ys1)])
+axs[0, 0].set_title("t=0")
+axs[0, 0].set_ylabel("y")
+axs[0, 0].set_xlabel("x")
+fig.colorbar(im1, ax=axs[0, 0])
+
+# Drugi wykres
+im2 = axs[0, 1].pcolormesh(X, Y, U[:, :, 4000], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[0, 1].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[0, 1].set_ylim([min(ys1), max(ys1)])
+axs[0, 1].set_title("t=4")
+axs[0, 1].set_ylabel("y")
+axs[0, 1].set_xlabel("x")
+fig.colorbar(im2, ax=axs[0, 1])
+
+# Trzeci wykres
+im3 = axs[1, 0].pcolormesh(X, Y, U[:, :, 8000], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[1, 0].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[1, 0].set_ylim([min(ys1), max(ys1)])
+axs[1, 0].set_title("t=8")
+axs[1, 0].set_ylabel("y")
+axs[1, 0].set_xlabel("x")
+fig.colorbar(im3, ax=axs[1, 0])
+
+# Czwarty wykres
+im4 = axs[1, 1].pcolormesh(X, Y, U[:, :, n], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[1, 1].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[1, 1].set_ylim([min(ys1), max(ys1)])
+axs[1, 1].set_title(f"t=10")
+axs[1, 1].set_ylabel("y")
+axs[1, 1].set_xlabel("x")
+fig.colorbar(im4, ax=axs[1, 1])
+
+
+plt.subplots_adjust(hspace=0.4, wspace=0.3)  # hspace: odstęp w pionie, wspace: odstęp w poziomie
+
+plt.show()
+
+```
+
+
+
+```{python}
+#|echo: false
+#|warning: false
+
+# epsilon = 0.1
+
+U = np.zeros((l1_y, l1_x+l2_x-1, n+1), None) # tworzenie całościowej macierzy rozwiązania dla wszystkich czasów
+U[:, :, 0] = u_0 # dodanie warunku początkowego
+
+# rozwiązanie L1
+U_L1 = np.zeros((l1_y, l1_x, n+1), None)
+U_L1[:, :, 0] = u1_0
+
+# rozwiązanie L2
+U_L2 = np.zeros((l2_y, l2_x, n+1), None)
+U_L2[:, :, 0] = u2_0
+
+for k in range(n):
+    # L1
+    for i in range(l1_x):
+        for j in range(l1_y):
+            #print((i,j,k))
+            if i + 1 > l1_x - 1 or j + 1 > l1_y - 1 or i - 1 < 0 or j - 1 < 0:
+                U_L1[j, i, k + 1] = 0 # Dirichlet wszedzie, pozniej poprawiamy na Neumana
+            else:
+                U_L1[j, i, k+1] = (U_L1[j, i, k] + h_t / (h_x ** 2) * (
+                            U_L1[j, i + 1, k] + U_L1[j, i - 1, k] +
+                            U_L1[j + 1, i, k] + U_L1[j - 1, i, k] - 4 * U_L1[j, i, k]) +
+                h_t*f_epsilon(0.1, xs1[i], ys1[j]))
+    U_L1[-1, :, k + 1] = U_L1[-2, :, k + 1] # góra
+    U_L1[:, -1, k + 1] = U_L1[:, -2, k + 1] # prawo
+
+    # L2
+    for i2 in range(l2_x):
+        for j2 in range(l2_y):
+            if i2 + 1 > l2_x - 1 or j2 + 1 > l2_y - 1 or i2 - 1 < 0 or j2 - 1 < 0:
+                U_L2[j2, i2, k + 1] = 0 # Dirichlet wszedzie, pozniej poprawiamy na Neumana
+            else:
+                U_L2[j2, i2, k+1] = (U_L2[j2, i2, k] + h_t / (h_x ** 2) * (
+                            U_L2[j2, i2 + 1, k] + U_L2[j2, i2 - 1, k] +
+                            U_L2[j2 + 1, i2, k] + U_L2[j2 - 1, i2, k] - 4 * U_L2[j2, i2, k]) +
+                h_t*f_epsilon(0.1, xs2[i2], ys2[j2]))
+
+    U_L2[:, -1, k + 1] = U_L2[:, -2, k + 1] # prawo
+    U_L2[:, 0, k + 1] = U_L2[:, 1, k + 1] # to jest po to by latwo robic srednia czyli lewo
+
+    # srednia elementow
+    for j22 in range(l2_y):
+        a = U_L1[j22, -2, k+1]
+        b = U_L2[j22, 1, k+1]
+        c = (a+b)/2
+        U_L1[j22, -1, k+1], U_L2[j22, 0, k+1] = c, c
+
+
+# dodawanie dwóch obszarów rozwiązanych do jednej macierzy
+for k in range(1,n+1):
+    u_k = np.zeros(shape=(l1_y, l1_x+l2_x-1), dtype=None)
+    l_zer = [None]*(l1_y-l2_y)
+    for i in range(l1_x+l2_x-1):
+        if i < l1_x:
+            u_k[:, i] = U_L1[:,i, k]
+        else:
+            u_k[:, i] = list(U_L2[:, i-l1_x+1, k]) + l_zer
+
+    U[:, :, k] = u_k
+    
+# Tworzenie układu podwykresów
+fig, axs = plt.subplots(2, 2, figsize=(14, 7), sharey=True)
+fig.suptitle("Mapa ciepła dla $\epsilon =0.1$")
+
+xs_11 = xs1.copy()
+xs_11.pop()
+
+# Tworzenie siatki współrzędnych
+X, Y = np.meshgrid(xs_11 + xs2, ys1)
+
+# Pierwszy wykres
+im1 = axs[0, 0].pcolormesh(X, Y, U[:, :, 0], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[0, 0].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[0, 0].set_ylim([min(ys1), max(ys1)])
+axs[0, 0].set_title("t=0")
+axs[0, 0].set_ylabel("y")
+axs[0, 0].set_xlabel("x")
+fig.colorbar(im1, ax=axs[0, 0])
+
+# Drugi wykres
+im2 = axs[0, 1].pcolormesh(X, Y, U[:, :, 4000], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[0, 1].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[0, 1].set_ylim([min(ys1), max(ys1)])
+axs[0, 1].set_title("t=4")
+axs[0, 1].set_ylabel("y")
+axs[0, 1].set_xlabel("x")
+fig.colorbar(im2, ax=axs[0, 1])
+
+# Trzeci wykres
+im3 = axs[1, 0].pcolormesh(X, Y, U[:, :, 8000], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[1, 0].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[1, 0].set_ylim([min(ys1), max(ys1)])
+axs[1, 0].set_title("t=8")
+axs[1, 0].set_ylabel("y")
+axs[1, 0].set_xlabel("x")
+fig.colorbar(im3, ax=axs[1, 0])
+
+# Czwarty wykres
+im4 = axs[1, 1].pcolormesh(X, Y, U[:, :, n], cmap='viridis')  # Bez globalnego vmin, vmax
+axs[1, 1].set_xlim([min(xs1 + xs2), max(xs1 + xs2)])
+axs[1, 1].set_ylim([min(ys1), max(ys1)])
+axs[1, 1].set_title(f"t=10")
+axs[1, 1].set_ylabel("y")
+axs[1, 1].set_xlabel("x")
+fig.colorbar(im4, ax=axs[1, 1])
+
+
+plt.subplots_adjust(hspace=0.4, wspace=0.3)  # hspace: odstęp w pionie, wspace: odstęp w poziomie
+
+plt.show()
+
+```
+
+
+Po przyjżeniu się wykresom widzimy, że dla $\varepsilon=0$ rozwiązanie bardzo szybko zbiega do zera (widać to zwłaszcza po skali na pocznym pasku), zaś dla pozostałych dwóch przypadków wartość $\varepsilon$ jest na tyle dominująca, że układ ma wyraźny pik w tym miejscu (oczywiście w zależności od $\varepsilon$ sytuacje są "przeskalowane", dobrze to widać po wartościach podziałek na bocznym panelu kolorów). Wszystkie układy się stabilizują.
+
+## 1.4
+
+Teraz dla każdej wartości $\varepsilon$ zaznaczymy na wykresie całkowitą energię $\Psi$, która została oddana do układu, zdefiniowaną jako
+
+$$\Psi(t)= \int_0^t \int_L \varepsilon \mathbf{1}_{\{(x, y) \in [-\frac{1}{10}, \frac{1}{10}]^2\}}(x, y) dx  \,\, dy \,\, ds.$$
+Energie wyznaczymy w sposób analityczny i numeryczny, a wyniki pokażemy na wykresie. Tutaj zaprezentujemy tylko analityczne obliczenia.
+
+$$\Psi(t)= \int_0^t \int_L \varepsilon \mathbf{1}_{\{(x, y) \in [-\frac{1}{10}, \frac{1}{10}]^2\}}(x, y) dx \,\, dy \,\, ds = \varepsilon \int_0^t \int_{-1/10}^{1/10} \int_{-1/10}^{1/10} 1 dx \,\, dy \,\, ds = $$
+
+$$=\varepsilon \int_0^t \int_{-1/10}^{1/10} \frac{1}{5} dy  \,\, ds = \frac{\varepsilon}{5} \int_0^t \frac{1}{5} ds = \frac{\varepsilon}{25}t$$
+
+```{python}
+#|echo: false
+#|warning: false
+
+# metoda prostokątów dla 3 wymiarów, czyli bardziej prostopadloscianow
+# Parametry
+l_time = np.arange(0,10,0.1)
+
+
+def analityczne_calka(ep, time):
+    return ep*time/25
+
+
+cal_an_0 = [analityczne_calka(0,t_i) for t_i in l_time]
+cal_an_01 = [analityczne_calka(0.1,t_i) for t_i in l_time]
+cal_an_001 = [analityczne_calka(0.01,t_i) for t_i in l_time]
+
+cal_num_0 = []
+cal_num_01 = []
+cal_num_001 = []
+
+epsilon1, epsilon2, epsilon3 = 0, 0.1, 0.01
+# numerycznie
+Nx, Ny, Ns = 100, 100, 100  # Liczba punktów w każdym wymiarze
+# Dyskretyzacja
+# zauważamy, że obszar L można ograniczyć do [-1/10,1/10] bo na reszcie jest 0
+x = np.linspace(-1/10, 1/10, Nx)
+y = np.linspace(-1/10, 1/10, Ny)
+dx = x[1] - x[0]
+dy = y[1] - y[0]
+
+for t_ in l_time:
+    # Dyskretyzacja cd.
+    s = np.linspace(0, t_, Ns)
+
+    ds = s[1] - s[0]
+
+    # Całka metodą prostokątów
+    integral1, integral2, integral3 = 0, 0, 0
+    for si in s:
+        for yi in y:
+            for xi in x:
+                # Sprawdzamy, czy punkt należy do obszaru wskaźnikowego (tu zawsze tak)
+                if -1/10 <= xi <= 1/10 and -1/10 <= yi <= 1/10:
+                    integral1 += epsilon1 * dx * dy * ds
+                    integral2 += epsilon2 * dx * dy * ds
+                    integral3 += epsilon3 * dx * dy * ds
+
+    cal_num_0.append(integral1)
+    cal_num_01.append(integral2)
+    cal_num_001.append(integral3)
+
+plt.figure(figsize=(10, 6))
+
+# Rysowanie wykresów na jednym obrazie
+plt.plot(l_time, cal_an_0, label='$\epsilon=0$ (analitycznie)', color='blue')
+plt.plot(l_time, cal_num_0, label='$\epsilon=0$ (numerycznie)', color='orange')
+plt.plot(l_time, cal_an_01, label='$\epsilon=0.1$ (analitycznie)', color='green')
+plt.plot(l_time, cal_num_01, label='$\epsilon=0.1$ (numerycznie)', color='red')
+plt.plot(l_time, cal_an_001, label='$\epsilon=0.01$ (analitycznie)', color='purple')
+plt.plot(l_time, cal_num_001, label='$\epsilon=0.01$ (numerycznie)', color='brown')
+
+# Ustawienia osi
+#plt.ylim(-10, 10)  # Ograniczenie osi Y dla lepszej widoczności tan(x)
+
+# Dodanie legendy
+plt.legend()
+
+# Dodanie tytułu i etykiet osi
+plt.title('Całkowita energia oddana do układu dla różnych wartości $\epsilon$')
+plt.xlabel('t')
+plt.ylabel('$\Psi$(t)')
+
+# Wyświetlenie wykresu
+plt.show()
+```
+
+Jak widać z powyższych wykresów wraz ze wzrostem czasu i wartości parametru $\varepsilon$ wzrasta wartość energii oddanej do układu. Wartości obliczone numerycznie dość dobrze przyblizają analityczne wyniki.

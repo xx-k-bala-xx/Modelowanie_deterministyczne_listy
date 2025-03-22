@@ -1,0 +1,473 @@
+---
+title: "Lista 1"
+author: "Klaudia Bała"
+format: pdf
+jupyter: python3
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# Zadanie 1
+
+W tym zadaniu mamy populację, której dynamika została opisana modelem
+logistycznym z parametrami $K=1$ oraz $r=0.25$ z uwzględnieniem zasady
+Allego, tzn. gdy populacja spadnie poniżej poziomu $A=0.5$, to zaczyna
+ona spadać ze względu na zbyt niską pulę genów.
+
+Uwaga: W zadaniu zostały zmienione parametry zgodnie z sugestią, tak by
+rozwiązanie analityczne było zadane jawnym wzorem.
+
+
+## (1.1)
+
+Równanie różniczkowe w ogólnej postaci opisujące to zjawisko ma postać:
+$$\frac{dy}{dt}=-ry(1-\frac{y}{A})(1-\frac{y}{K}), \,\, gdzie \,\, y=y(t).$$
+Uwzględniając ustaloną wartość parametrów w naszym przypadku otrzymujemy
+równanie postaci: $$\frac{dy}{dt}=-\frac{1}{4}y(1-2y)(1-y).$$
+
+## (1.2)
+
+Aby znaleźć stany stacjonarne musimy rozważyć, kiedy pochodna przyjmuje
+wartość 0, tzn. rozwiązać równanie postaci:
+$$0=-\frac{1}{4}y(1-2y)(1-y).$$ Zatem rozwiązaniami są
+$y=0 \vee y=\frac{1}{2} \vee y=1$. Zbadamy teraz ich stabilność obserwując
+jak zmienia się znak pochodnej.
+
+\newpage
+
+| Przedział         | Znak pochodnej |
+|-------------------|----------------|
+| $(-\infty,0)$     | plus           |
+| $(0,\frac{1}{2})$ | minus          |
+| $(\frac{1}{2},1)$ | plus           |
+| $(1,\infty)$      | minus          |
+
+Z analizy znaku pochodnej wynika, że rozwiązania $y=0$ oraz $y=1$ są
+rozwiązaniami przyciągającymi (znak pochodnej zmienia się z plusa do
+minusa, co oznacza, że rozwiązania startujące np. w przedziale
+$\left(\frac{1}{2},1\right)$ są rosnące i zbliżają się do rozwiązania
+stacjonarnego $y=1$ (ale nie przecinają go), zaś startujące w przedziale
+$(1,\infty)$ są malejące , dlatego również wraz ze wzrostem $t$ zbliżają
+się do rozwiązania stacjonarnego, ale nigdy go nie przecinają), czyli są
+stabilne, zaś rozwiązanie $y=\frac{1}{2}$ jest odpychające, czyli
+niestabilne.
+
+## (1.3)
+
+Teraz z użyciem jawnego schematu Eulera (JSE) z odpowiednio dobranym
+krokiem $h$, rozwiążemy zagadnienie dla kilku warunków początkowych.
+Dobierzemy je tak (warunki początkowe), by dodatkowo uzasadnić
+numerycznie stabilnosć rozwiązań stacjonarnych.
+
+```{python}
+#|echo: false
+import numpy as np
+import matplotlib.pyplot as plt
+
+st_roz = [0, 1/2, 1]
+N_0 = []
+for roz in st_roz:
+    N_0.append(roz-0.1)
+    N_0.append(roz + 0.1)
+A = 0.5
+K = 1
+r = 1/4
+T=5
+h=0.01
+n=int(T/h)
+Xs = [0]
+Ys = []
+for e in N_0:
+  Ys.append([e])
+```
+
+```{python}
+#|echo: true
+# fragment kodu używający JSE
+for j in range(n):
+    Xs.append(Xs[j] + h)
+    for i in range(len(N_0)):
+        Ys[i].append(Ys[i][j] - h*Ys[i][j]*r*(1-Ys[i][j]/K)*(1-Ys[i][j]/A))
+```
+
+```{python}
+#|echo: false
+
+plt.figure(figsize=(4, 2.5))
+for p in range(len(N_0)):
+    plt.plot(Xs, Ys[p], label=str(N_0[p]))
+    if p in [0,2,4]:
+      p=int(p/2)
+      plt.plot([0,T], [st_roz[p]]*2, label=str(st_roz[p]))
+    
+plt.title("Rozwiązanie zagadnienia dla kilku warunków początkowych z użyciem JSE")
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.show()
+
+```
+
+Jak wynika z wykresu powyżej, numeryczne obliczenia potwierdzają nasze
+rozumowanie analityczne. Możemy zauważyć, że wraz ze wzrostem czasu
+rozwiązania z warunkami początkowymi $y_{0}=-0.1$ i $y_{0}=0.1$,
+,,zbliżają" się do rozwiązania stacjonarnego $y=0$. Analogicznie mamy
+dla rozwiązań z warunkami początkowymi $y_{0}=0.9$ i $y_{0}=1.1$, które
+,,zbliżają się" do rozwiązania stacjonarnego $y=1$ wraz ze wzrostem $t$.
+Z kolei rozwiązania o warunkach początkowych $y_{0}=0.4$ i $y_{0}=0.6$,
+wraz z wzrostem $t$ coraz bardziej ,,oddalają się" od rozwiązania
+stacjonarnego $y=\frac{1}{2}$.
+
+Uwaga: Biorąc pod uwagę interpretację naszego układu równań i
+parametrów, nie ma sensu rozważanie rozwiązań startujących poniżej 0,
+ponieważ populacja nie może być ujemna, jednak dla pokazania stabilności
+rozwiązań możemy na chwilę zapomnieć o interpretacji i patrzeć na ten
+układ w kontekście czysto teoretycznym(numerycznym). Wtedy możemy rozważać takie
+rozwiązania i lepiej pokazać stabilność rozwiązania stacjonarnego $y=0$,
+stąd na wykresie zostało uwzględnione takie rozwiązanie.
+
+## (1.4)
+
+Teraz rozwiążemy to zagadnienie dla warunku początkowego
+$y_0=\frac{3}{4}$. Zatem mamy:
+
+\begin{equation}
+\begin{cases}
+  y'=-\frac{1}{4}y(1-2y)(1-y) \\
+  y_{0}=\frac{3}{4}
+\end{cases}
+\end{equation}
+
+Używając metody rozdzielonych zmiennych otrzymujemy:
+
+$$\int_{y_0}^{y} \frac{-4}{s(1-2s)(1-s)}ds=\int_{t_0}^{t}1dz$$
+$$\int_{t_0}^{t}1dz=t-t_0=t, \,\, bo \,\,t_0=0$$
+$$\int_{y_0}^{y} \frac{-4}{s(1-2s)(1-s)}ds= -4\int_{y_0}^{y} \frac{1}{s(1-2s)(1-s)}ds=-4\int_{y_0}^{y} \frac{1}{s} + \frac{4}{(1-2s)} + \frac{-1}{(1-s)}ds=$$
+$$-4\int_{y_0}^{y} \frac{1}{s} + (-2) \cdot \frac{-2}{(1-2s)} + \frac{-1}{(1-s)}ds=-4\left[ln|s| -2ln|1-2s| + ln|1-s| \right]_{y_0}^{y}=$$
+$$=-4\left(ln(y) -2ln(2y-1) + ln(1-y) -ln\left(\frac{3}{4}\right) + 2ln\left(\frac{1}{2}\right) - ln\left(\frac{1}{4}\right)\right)= $$
+$$=-4ln \left(\frac{4y(1-y)}{3(2y-1)^2}\right)$$ Przyrównujemy wyniki
+obu całek:
+$$-4ln\left(\frac{4y(1-y)}{3(2y-1)^2}\right)=t \Rightarrow ln\left(\frac{4y(1-y)}{3(2y-1)^2}\right)=-\frac{1}{4}t \Rightarrow \frac{4y(1-y)}{3(2y-1)^2} = e^{-\frac{1}{4}t} \Rightarrow $$
+$$ \Rightarrow \dots \Rightarrow 0=y^2(1+3e^{-\frac{1}{4}t})-y(1+3e^{-\frac{1}{4}t})+\frac{3}{4}e^{-\frac{1}{4}t}$$
+Rozwiązując to równanie otrzymujemy rozwiązanie
+$$y(t)=\frac{1+3e^{-\frac{1}{4}t}+\sqrt{1+3e^{-\frac{1}{4}t}}}{2(1+3e^{-\frac{1}{4}t})}=\frac{3+e^{\frac{t}{4}}+\sqrt{e^{\frac{t}{4}}(3+e^{\frac{t}{4}})}}{2(3+e^{\frac{t}{4}})}$$
+
+Następnie, skoro mamy już rozwiązanie analityczne, to wyznaczymy błąd
+między nim a rozwiązaniem numerycznym z JSE w zależności od kroku
+$h \in [0.01,0.5].$ Do wyliczenia błędu posługujemy się wzorem
+$\underset{t\in T}{max} |y(t)-y_{JSE}(t)|$.
+
+```{python}
+#|echo: false
+
+A = 0.5
+K = 1
+r = 1/4
+T=2
+h=np.arange(0.1,0.51,0.001)
+#error1 = []
+error2 = []
+#error3 = []
+for h_i in h:
+    Ys = [3 / 4]
+    n = int(T / h_i)
+    abs_er = []
+    #sum_er3 = 0
+    for j in range(n):
+        x = (j+1)*h_i
+        d = 1 + 3 * np.exp(-1 / 4 * x)
+        t_val = (d + d ** (1 / 2)) / (2 * d)
+        jse = Ys[j] - h_i*Ys[j]*r*(1-Ys[j]/K)*(1-Ys[j]/A)
+        Ys.append(jse)
+        a = abs(jse-t_val)
+        abs_er.append(a)
+        #sum_er3 += a**2
+    #error1.append(a)
+    error2.append(max(abs_er))
+    #error3.append(sum_er3**(1/2))
+
+plt.figure(figsize=(4, 2.5))
+#plt.plot(h, error1, label="błąd_1")
+plt.plot(h, error2, label="błąd_2")
+#plt.plot(h, error3, label="błąd_3")
+#plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.title("Błąd między rozwiązaniem analitycznym i numerycznym w zależności od kroku $h$")
+plt.show()
+
+```
+
+Jak wynika z wykresu wraz ze wzrostem wartości kroku $h$ zwiększa się
+błąd między rozwiązaniem analitycznym a numerycznym. Błąd rośnie
+liniowo.
+
+```{python}
+#|echo: false
+#|eval: false
+# Tworzenie wykresów w układzie 1x4
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+# Pierwszy wykres
+axs[0].plot(h, error1)
+axs[0].set_title("błąd_1")
+
+# Drugi wykres
+axs[1].plot(h, error2)
+axs[1].set_title("błąd_2")
+
+# Trzeci wykres
+axs[2].plot(h, error3)
+axs[2].set_title("błąd_3")
+
+# Optymalizacja rozmieszczenia
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#|echo: false
+#|eval: false 
+
+"""
+## (1*)
+
+Wykonujemy wszytskie kroki jak w podpunkcie (1.4) ale zmieniamy wartość parametru $r$ na 33. W rozwiązaniu analitycznym wpłynie to na zmianę wykładnika w potędze liczby $e$, tzn. teraz będziemy mieć $y(t)=\frac{1+3e^{-33t}+\sqrt{1+3e^{-33t}}}{2(1+3e^{-33t})}$. 
+"""
+A = 0.5
+K = 1
+r = 33
+T=20
+h=np.arange(0.1,0.51,0.001)
+error1 = []
+error2 = []
+error3 = []
+for h_i in h:
+    Ys = [3 / 4]
+    n = int(T / h_i)
+    abs_er = []
+    sum_er3 = 0
+    for j in range(n):
+        x = (j+1)*h_i
+        d = 1 + 3 * np.exp(-1 / 4 * x)
+        t_val = (d + d ** (1 / 2)) / (2 * d)
+        jse = Ys[j] - h_i*Ys[j]*r*(1-Ys[j]/K)*(1-Ys[j]/A)
+        Ys.append(jse)
+        a = abs(jse-t_val)
+        abs_er.append(a)
+        sum_er3 += a**2
+    error1.append(a)
+    error2.append(max(abs_er))
+    error3.append(sum_er3**(1/2))
+
+
+#plt.plot(h, error1, label="błąd_1")
+plt.plot(h, error2, label="błąd_2")
+#plt.plot(h, error3, label="błąd_3")
+#plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.title("Błąd między rozwiązaniem analitycznym i numerycznym w zależności od kroku $h$")
+plt.show()
+
+```
+
+```{python}
+#|echo: false
+#|eval: false 
+# Tworzenie wykresów w układzie 1x4
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+# Pierwszy wykres
+axs[0].plot(h, error1)
+axs[0].set_title("błąd_1")
+
+# Drugi wykres
+axs[1].plot(h, error2)
+axs[1].set_title("błąd_2")
+
+# Trzeci wykres
+axs[2].plot(h, error3)
+axs[2].set_title("błąd_3")
+
+# Optymalizacja rozmieszczenia
+plt.tight_layout()
+plt.show()
+```
+
+# Zadanie 2
+
+W tym zadaniu mamy populację robaczków Choristoneura fumiferana
+(Clemens), gdzie dynamika tej populacji jest opisana przez następujące
+zagadnienie początkowe:
+
+\begin{equation}
+\begin{cases}
+  y'=f(y)  \\
+  y(0)= y_0 \geq 0
+\end{cases}
+f(y)=ry(1-\frac{y}{8})-\frac{10y^2}{1+y^2}
+\end{equation}
+
+## (2.1)
+
+Dla parametru $r$ zaproponujemy dwie wartości $r_1$ i $r_2$, tak by
+$r_2>r_1>0$ oraz równanie $f(y)=0$ miało dla $r_1$ cztery rozwiązania, zaś dla
+$r_2$ dwa. Rozwiążemy to graficznie z pomocą aplikacji Desmos badając
+wizualnie przecięcia funkcji $r(1-\frac{y}{8})$ oraz
+$\frac{10y}{1+y^2}$. Poniżej zostały dodane ilustracje, na podstawie
+których zostały wybrane parametry.
+
+![Wybór współczynnika
+$r_1$](%22C:\Users\klaud\OneDrive\Pulpit\uczelnia\matematyka\sem1mgr\modelowanie_deterministyczne\wybor_r1.png%22){width="100%"}
+
+Wybraliśmy $r_1=5$, jak widać z powyższej ilustarcji wykresy przecinają
+się w 3 miejscach, czyli razem z zerowym rozwiązaniem mamy 4
+rozwiązania, więc spełniony jest zadany warunek.
+
+![Wybór współczynnika
+$r_2$](%22C:\Users\klaud\OneDrive\Pulpit\uczelnia\matematyka\sem1mgr\modelowanie_deterministyczne\wybor_r2.png%22){width="100%"}
+
+Wybraliśmy $r_2=6$, jak widać z powyższej ilustarcji wykresy przecinają
+się w 1 miejscu, czyli razem z zerowym rozwiązaniem mamy 2 rozwiązania.
+Dodatkowo $r_2=6>r_1=5$, zatem spełnione są wszystkie zadane warunki.
+
+\newpage
+
+## (2.2)
+
+Następnie dla każdej z wybranych wartości $r$ wykonamy po jednej
+ilustarcji uzasadniającej stabilność rozwiązań stacjonarnych. Jako że
+nie wyznaczamy dokładnej wartości rozwiązań stacjonarnych (oprócz
+oczywistego 0), będziemy je oznaczać $a_1, a_2, a_3, a_4$ dla parametru
+$r_1$ oraz $a_5, a_6$ dla parametru $r_2$, pamiętając, że $a_1=0$ oraz
+$a_5=0$. Dla lepszego przedstawienia sytuacji wykorzystano przybliżone
+wartości tych rozwiązań odczytane z aplikacji Desmos i zostały one użyte
+przy tworzeniu tych wykresów.
+
+```{python}
+#|echo: false
+#|fig-height: 2
+# dla r1
+N_0 = [0.1, 0.4, 1, 2, 2.8, 5, 4.5]
+r = 5
+T=2
+h=0.01
+n=int(T/h)
+Xs = [0]
+Ys = []
+for e in N_0:
+  Ys.append([e])
+
+for j in range(n):
+    Xs.append(Xs[j] + h)
+    for i in range(len(N_0)):
+        Ys[i].append(Ys[i][j] + h*(Ys[i][j]*r*(1-Ys[i][j]/8)-(10*(Ys[i][j])**2)/(1+(Ys[i][j])**2)))
+        
+plt.figure(figsize=(4, 3))
+for p in range(len(N_0)):
+    plt.plot(Xs, Ys[p], label=str(N_0[p]))
+
+st_roz = [0, 0.65708, 2.52932, 4.81361]
+for h in range(len(st_roz)):
+    plt.plot([0,T], [st_roz[h]]*2, label="$a_"+str(h+1)+"$")
+
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.title("Badanie stabilności rozwiązań stacjonarnych numerycznie dla $r_1$")
+plt.show()
+```
+
+Jak wynika z powyższej ilustracji rozwiązaniami stabilnymi są $y=a_2$ i
+$y=a_4$, zaś $y=a_1$ i $y=a_3$ są niestabilne, czyli w sumie mamy 2 stabilne i 2 niestabilne rozwiązania stacjonarne.
+
+```{python}
+#|echo: false
+#|fig-height: 2
+# dla r2
+N_0 = [0.1, 0.4, 1.5, 3, 4.5, 6]
+r = 6
+T=2
+h=0.1
+n=int(T/h)
+Xs = [0]
+Ys = []
+for e in N_0:
+  Ys.append([e])
+
+for j in range(n):
+    Xs.append(Xs[j] + h)
+    for i in range(len(N_0)):
+        Ys[i].append(Ys[i][j] + h*(Ys[i][j]*r*(1-Ys[i][j]/8)-(10*(Ys[i][j])**2)/(1+(Ys[i][j])**2)))
+        
+plt.figure(figsize=(4, 2.5))
+for p in range(len(N_0)):
+    plt.plot(Xs, Ys[p], label=str(N_0[p]))
+
+st_roz = [0, 5.74879]
+for h in range(len(st_roz)):
+    plt.plot([0,T], [st_roz[h]]*2, label="$a_"+str(h+5)+"$")
+
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.title("Badanie stabilności rozwiązań stacjonarnych numerycznie dla $r_2$")
+plt.show()
+
+```
+
+Jak wynika z powyższej ilustracji rozwiązaniem stabilnym jest $y=a_6$,
+zaś $y=a_5$ jest niestabilne, czyli mamy jedno stabilne i jedno niestabilne rozwiązanie.
+
+Analiza tych dwóch przypadków może wskazywać na to, że jeśli mamy parzystą liczbę rozwiązań stacjonarnych to połowa z nich jest stabilna, a druga połowa jest niestabilna.
+
+## (2.3)
+
+Zakładamy teraz, że $y_0=0.25$. Sporządzimy wykres rozwiązania na
+podstawie JSE dla którego parametr $r$ zmienia się w czasie w
+następujący sposób:
+
+\begin{equation}
+r=
+\begin{cases}
+  r_1, \,\, 0 \leq t \leq 8 \\
+  r_2, \,\, 8 < t \leq 16 \\
+  r_1, \,\, 16 < t \leq 24
+\end{cases}
+\end{equation}
+
+```{python}
+#|echo: false
+#|fig-height: 3
+#|fig-align: center
+N_0 = 0.25
+h=0.01
+T=24+h
+n=int(T/h)
+Xs = [0]
+Ys = [N_0]
+
+for j in range(n):
+    t = Xs[j] + h
+    Xs.append(t)
+    if 8 < t <= 16:
+        r = 6
+    else:
+        r = 5
+    #print(Ys)
+    Ys.append(Ys[j] + h*(Ys[j]*r*(1-Ys[j]/8)-(10*(Ys[j])**2)/(1+(Ys[j])**2)))
+
+plt.figure(figsize=(4, 2.5))
+#print(Ys)
+plt.plot(Xs, Ys)
+plt.plot([0,10], [.7, .7], linestyle="--", color="green")
+plt.plot([13,18], [5.8, 5.8], linestyle="--", color="green")
+plt.plot([15,25], [4.8, 4.8], linestyle="--", color="green")
+plt.title("Wykres rozwiązania sporządzony z użyciem JSE")
+plt.show()
+```
+
+Na powyższym wykresie rozwiązania możemy zauważyć związek ze zjawiskiem
+histerezy. Widzimy jak na pewnych poziomach (zaznaczonych pomocniczo
+zieloną przerywaną linią) rozwiązanie się stabilizuje, po czym
+nasytępuje zmiana przez zmianę wartości parametru $r$. Jednak pomimo
+powrotu do pierwotnej wartości parametru (po zmianie na $r_2$ ponowna
+zmiana na $r_1$) $r$ tj. $r_1$, rozwiązanie nie stabilizuje się ponownie
+na tym samym poziomie, co pierwotnie ale już na innym. Oznacza to, że
+pamięta poprzednie zmiany i zależy nie tylko od aktualnie zadanych
+parametrów, ale także od poprzednich stanów.
+
+Uwaga: Została zmieniona definicja parametru $r$. Ze względu na dobrane wartości parametrów $r_1$ i $r_2$ zaszła potrzeba modyfikacji zakresów wartości $t$ dla poszczególnych przypadków, by lepiej zilustrować zachodzące zjawisko.
+
