@@ -1,2 +1,2 @@
-# Modelowanie_deterministyczne_listy
-Zadania wykonywane w ramach przedmiotu Modelowanie deterministyczne w semestrze zimowym 2024/2025.
+# Co znajduje się w tym repozytorium?
+W tym repozytorium w poszczególnych folderach zostały umieszczone rozwiązania list z zadaniami wykonanymi w ramach przedmiotu Modelowanie deterministyczne w semestrze zimowym 2024/2025. W każdym folderze umieszczony został plik .pdf z poleceniami zadań, plik .pdf z moimi rozwiązaniami zadań w formie raportu oraz plik .qmd, dzięki któremu można wygenerować wcześniej wspomniany raport. 
